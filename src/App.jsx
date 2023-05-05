@@ -1,7 +1,11 @@
+import { Check } from "./Check";
+import { Navbar } from "./Navbar";
+
 function App() {
   return (
     <>
-      <h1>Keyper</h1>
+      <Navbar />
+      <Check />
     </>
   );
 }
