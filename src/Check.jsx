@@ -10,6 +10,7 @@ import { inventory } from "./data";
 export const Check = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [isLoading, setLoading] = useState(true);
 
   function debounce(func, delay) {
     let timeoutId;
@@ -37,7 +38,11 @@ export const Check = () => {
         .then((response) => response.json())
         .then((data) => setResults(data.hits));
     }, 1000);
+
+    setLoading(true);
     performSearch();
+    setLoading(false);
+    return () => {};
   }, [query]);
 
   function handleChange(event) {
@@ -64,6 +69,7 @@ export const Check = () => {
         )}
       </div>
       <div className="flex flex-col md:space-y-1 md:px-4">
+        {isLoading && <div>Loading....</div>}
         {results.map((r, i) => (
           <VehicleCard key={r?.stock || i} v={r} />
         ))}
@@ -85,8 +91,12 @@ const VehicleCard = ({ v, ...props }) => {
         <div className="min-w-24 w-24 h-full flex-shrink-0 overflow-hidden">
           <img className="w-full h-auto" src={v?.thumbnail} />
         </div>
-        <div className="flex flex-col items-start flex-grow truncate">
-          <a className="whitespace-pre-wrap text-sm  pb-1" href={v?.link} target="_blank">
+        <div className="flex flex-col justify-between items-start flex-grow truncate">
+          <a
+            className="whitespace-pre-wrap text-sm  hover:underline"
+            href={v?.link}
+            target="_blank"
+          >
             {`${v?.year} ${v?.make} ${v?.model}`}{" "}
             <span className="opacity-40">{v?.trim}</span>
             {v?.certified > 0 && (
