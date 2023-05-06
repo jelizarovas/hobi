@@ -7,7 +7,7 @@ export const Navbar = () => {
       <div className="flex items-center space-x-2  select-none">
         <img
           className="w-4 grayscale"
-          src="/favicon/android-chrome-192x192.png"
+          src="favicon/android-chrome-192x192.png"
         />
         <span className="uppercase font-mono opacity-70">{data?.name}</span>
       </div>
