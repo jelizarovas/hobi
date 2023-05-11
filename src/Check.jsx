@@ -7,10 +7,27 @@ import {
 } from "react-icons/md";
 import { inventory } from "./data";
 
+const burienAPI = {
+  name: "Burien",
+  "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
+  "X-Algolia-Application-Id": "SEWJN80HTN",
+  index:
+    "rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low",
+};
+
+const rairdonAPI = {
+  name: "Rairdon",
+  "X-Algolia-API-Key": "ec7553dd56e6d4c8bb447a0240e7aab3",
+  "X-Algolia-Application-Id": "V3ZOVI2QFZ",
+  index: "rairdonautomotivegroup_production_inventory_low_to_high",
+};
+
 export const Check = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [isLoading, setLoading] = useState(true);
+  const [api, setAPI] = useState(burienAPI);
+  const [total, setTotal] = useState(0);
 
   function debounce(func, delay) {
     let timeoutId;
@@ -23,27 +40,85 @@ export const Check = () => {
   useEffect(() => {
     const performSearch = debounce(() => {
       fetch(
-        "https://SEWJN80HTN-dsn.algolia.net/1/indexes/rairdonshondaofburien-legacymigration0222_production_inventory_high_to_low/query",
+        `https://${api["X-Algolia-Application-Id"]}-dsn.algolia.net/1/indexes/${api.index}/query`,
         {
           headers: {
-            "X-Algolia-API-Key": "179608f32563367799314290254e3e44",
-            "X-Algolia-Application-Id": "SEWJN80HTN",
+            "X-Algolia-API-Key": api["X-Algolia-API-Key"],
+            "X-Algolia-Application-Id": api["X-Algolia-Application-Id"],
           },
           method: "POST",
           body: JSON.stringify({
+            hitsPerPage: 5,
             query: query,
+            facets: [
+              "features",
+              "our_price",
+              "lightning.lease_monthly_payment",
+              "lightning.finance_monthly_payment",
+              "type",
+              "api_id",
+              "year",
+              "make",
+              "model",
+              "model_number",
+              "trim",
+              "body",
+              "doors",
+              "miles",
+              "ext_color_generic",
+              "features",
+              "lightning.isSpecial",
+              "lightning.locations",
+              "lightning.status",
+              "lightning.class",
+              "fueltype",
+              "engine_description",
+              "transmission_description",
+              "metal_flags",
+              "city_mpg",
+              "hw_mpg",
+              "days_in_stock",
+              "ford_SpecialVehicle",
+              "lightning.locations.meta_location",
+              "ext_color",
+              "title_vrp",
+              "int_color",
+              "certified",
+              "lightning",
+              "location",
+              "drivetrain",
+              "int_options",
+              "ext_options",
+              "cylinders",
+              "vin",
+              "stock",
+              "msrp",
+              "our_price_label",
+              "finance_details",
+              "lease_details",
+              "thumbnail",
+              "link",
+              "objectID",
+              "algolia_sort_order",
+              "date_modified",
+              "hash",
+            ],
           }),
         }
       )
         .then((response) => response.json())
-        .then((data) => setResults(data.hits));
+        .then((data) => {
+          console.log({ data });
+          setResults(data.hits);
+          setTotal(data.nbHits);
+        });
     }, 1000);
 
     setLoading(true);
     performSearch();
     setLoading(false);
     return () => {};
-  }, [query]);
+  }, [query, api]);
 
   function handleChange(event) {
     setQuery(event.target.value);
@@ -71,16 +146,34 @@ export const Check = () => {
       <div className="flex flex-col md:space-y-1 md:px-4">
         {isLoading && <div>Loading....</div>}
         {results.map((r, i) => (
-          <VehicleCard key={r?.stock || i} v={r} />
+          <VehicleCard num={i} key={r?.stock || i} v={r} />
         ))}
       </div>
-
+      <div className="bg-white text-black">
+        <button
+          className={`p-2 m-2 ${
+            api.name === rairdonAPI.name ? "bg-red-500" : ""
+          }`}
+          onClick={() => setAPI(rairdonAPI)}
+        >
+          {rairdonAPI.name}
+        </button>
+        <button
+          className={`p-2 m-2 ${
+            api.name === burienAPI.name ? "bg-red-500" : ""
+          }`}
+          onClick={() => setAPI(burienAPI)}
+        >
+          {burienAPI.name}
+        </button>
+        <div className="p-2 m-2">{total.toString()}</div>
+      </div>
       {/* <pre className="text-xs">{JSON.stringify(results, null, 2)}</pre> */}
     </>
   );
 };
 
-const VehicleCard = ({ v, ...props }) => {
+const VehicleCard = ({ v, num, ...props }) => {
   const [isOpen, setOpen] = React.useState(false);
 
   const toggleOpen = () => setOpen((v) => !v);
@@ -131,6 +224,7 @@ const VehicleCard = ({ v, ...props }) => {
             {v?.our_price && isNaN(v.our_price) ? "CALL" : "$" + v?.our_price}
           </span>
           <div className="flex space-x-2">
+            <div className="opacity-20">{num + 1}</div>
             <a
               href={`http://www.carfax.com/VehicleHistory/p/Report.cfx?partner=DEY_0&vin=${v?.vin}`}
               target="_blank"
