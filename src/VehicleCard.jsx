@@ -54,7 +54,7 @@ export const VehicleCard = ({ v, num, ...props }) => {
             {v?.our_price && isNaN(v.our_price) ? "CALL" : "$" + v?.our_price}
           </span>
           <div className="flex space-x-2">
-            <div className="opacity-20">{num + 1}</div>
+            {/* <div className="opacity-20">{num + 1}</div> */}
             <a
               href={`http://www.carfax.com/VehicleHistory/p/Report.cfx?partner=DEY_0&vin=${v?.vin}`}
               target="_blank"

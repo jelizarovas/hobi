@@ -158,7 +158,7 @@ const MenuBar = ({
   total,
   ...props
 }) => {
-  const [settingsOpen, setSettingsOpen] = React.useState(true);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   return (
     <>
@@ -169,7 +169,7 @@ const MenuBar = ({
             className="bg-transparent px-2 py-1 w-full outline-none"
             value={query}
             onChange={handleChange}
-            placeholder="Search Honda of Burien Inventory...."
+            placeholder="Search HoBI...."
           />
           {query.length > 0 && (
             <button
