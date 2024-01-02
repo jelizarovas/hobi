@@ -51,7 +51,7 @@ export const Check = () => {
           },
           method: "POST",
           body: JSON.stringify({
-            hitsPerPage: 50,
+            hitsPerPage: 10,
             query: query,
             facets: [
               "features",
